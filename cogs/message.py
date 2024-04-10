@@ -52,8 +52,32 @@ MGN Blue Esports:
 Team Whales:
 1. Trần Văn Chính / BeanJ
 2. Lê Ngọc Vinh / Gloryy""")
+        
         if message.content =="Quan":
             await message.channel.send(file= discord.File('Dam.jpg'))
+        
+        if message.content =="Whose eyes are those eyes":
+            await message.channel.send("Those eyes are God's eyes")
+        
+        if message.content =="El Psy Kongroo":
+            await message.channel.send("""The universe has a beginning, but it has no end. —Infinite.
+
+Stars too have a beginning, but are by their own power destroyed. —Finite.
+
+History teaches that those who hold wisdom are often the most foolish.
+
+The fish in the sea know not the land. If they too hold wisdom, they too will be destroyed.
+
+It is more ridiculous for man to exceed light speed than for fish to live ashore.
+
+This may also be called God's final warning to those who rebel.""")
+        
+        if message.content =="Chaos;Head":
+            await message.channel.send("""If you were God, and your delusions could become reality,
+
+what delusions would you wish for?
+
+A sensual world? A despotic society?or...""")
 
 
 async def setup(client):
