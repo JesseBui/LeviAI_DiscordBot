@@ -24,13 +24,4 @@ async def main():
 async def on_ready():
     print('Levi is online')
 
-@client.command(pass_context = True)
-async def join(ctx):
-    if (ctx.author.voice):
-        channel = ctx.message.author.voice.channel
-        await channel.connect()
-    else:
-        await ctx.send("dmm")
-
-
 asyncio.run(main())
