@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 
-class message(commands.Cog):
+
+class Message(commands.Cog):
     def  __init__(self,client):
         self.client = client
     
@@ -72,13 +73,13 @@ It is more ridiculous for man to exceed light speed than for fish to live ashore
 
 This may also be called God's final warning to those who rebel.""")
         
-        if message.content =="Chaos;Head":
+        if message.content =="Delusional":
             await message.channel.send("""If you were God, and your delusions could become reality,
 
 what delusions would you wish for?
 
-A sensual world? A despotic society?or...""")
+A sensual world? A despotic society? Or...""")
 
 
 async def setup(client):
-    await client.add_cog(message(client))
+    await client.add_cog(Message(client))
