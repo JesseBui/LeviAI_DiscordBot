@@ -20,7 +20,7 @@ class Ai(commands.Cog):
     async def on_message(self, message):
         #Check to see if the channelID is correct
         #and check if they are responding to user
-        if message.author == self.client.user or message.channel.id != 1234238765786992732:
+        if message.author == self.client.user or message.channel.id != :
             return
         
         response = client.chat.completions.create(
