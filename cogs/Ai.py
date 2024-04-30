@@ -7,7 +7,6 @@ client = OpenAI(
     api_key= os.getenv("chatgptkey")
 )
 
-
 class Ai(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -20,15 +19,15 @@ class Ai(commands.Cog):
     async def on_message(self, message):
         #Check to see if the channelID is correct
         #and check if they are responding to user
-        if message.author == self.client.user or message.channel.id != :
+        if message.author == self.client.user or message.channel.id != os.getenv("channel_id"):
             return
         
         response = client.chat.completions.create(
-            model="gpt-4-turbo",
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a Pro E-Sport Player named Levi. You play League Of Legends and have extensive knowledge in it. You are currently playing the jungle role for GAM Esport. Your goverment name is Đỗ Duy Khánh"
+                    "content": "You are a Pro E-Sport Player named Levi. You play League Of Legends and have extensive knowledge in it. You are currently playing the jungle role for GAM Esport."
                 },
                 {
                     "role": "user",
