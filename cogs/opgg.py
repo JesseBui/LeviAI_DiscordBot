@@ -1,7 +1,7 @@
 import discord
 from discord.ext import  commands
 
-class opgg(commands.Cog):
+class Opgg(commands.Cog):
     def  __init__(self,client):
         self.client = client
 
@@ -41,4 +41,4 @@ class opgg(commands.Cog):
 
 
 async def setup(client):
-    await client.add_cog(opgg(client))
+    await client.add_cog(Opgg(client))

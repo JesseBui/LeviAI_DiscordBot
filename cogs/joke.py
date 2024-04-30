@@ -2,9 +2,12 @@ import discord
 from discord.ext import commands
 import json
 import requests
-import apikey
+from  dotenv import load_dotenv
+import os
 
-class joke(commands.Cog):
+load_dotenv()
+
+class Joke(commands.Cog):
     def  __init__(self,client):
         self.client = client
     
@@ -17,7 +20,7 @@ class joke(commands.Cog):
     async def joke(self,ctx):
         url = "https://daddyjokes.p.rapidapi.com/random"
         headers = {
-	    "X-RapidAPI-Key": apikey.jokekey,
+	    "X-RapidAPI-Key": os.getenv("jokekey"),
 	    "X-RapidAPI-Host": "daddyjokes.p.rapidapi.com"
         }
         response = requests.get(url, headers=headers)
@@ -25,4 +28,4 @@ class joke(commands.Cog):
         print('Levi has printed a joke')
 
 async def setup(client):
-    await client.add_cog(joke(client))
+    await client.add_cog(Joke(client))

@@ -1,9 +1,13 @@
 import discord
 from discord.ext import commands
 import aiohttp
-import apikey
+from dotenv import load_dotenv
+import os
 
-class weather(commands.Cog):
+load_dotenv()
+
+
+class Weather(commands.Cog):
     def  __init__(self,client):
         self.client = client
     
@@ -16,7 +20,7 @@ class weather(commands.Cog):
     async def weather(self,ctx ,*, city):
         url = "https://api.weatherapi.com/v1/current.json"
         params = {
-        "key": apikey.weatherkey,
+        "key": os.getenv("weatherkey"),
         "q": city
     }
         async with aiohttp.ClientSession() as session:
@@ -38,4 +42,4 @@ class weather(commands.Cog):
         
 
 async def setup(client):
-    await client.add_cog(weather(client))
+    await client.add_cog(Weather(client))

@@ -3,108 +3,93 @@ from discord.ext import commands
 import yt_dlp
 import os
 from youtube_search import YoutubeSearch
-import json
 import asyncio
+
+voice_clients = {}
+queues = {}
+yt_dl_options = {"format": "bestaudio/best"}
+ytdl = yt_dlp.YoutubeDL(yt_dl_options)
+
+ffmpeg_options = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+                  'options': '-vn -filter:a "volume=0.25"'}
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.loop = False  # check if loop is active
-        self.current_song = None  # check what song is playing
-        self.queues = {}  # dictionary to store queues for each guild
 
-        # Delete 'song.mp3' if it exists so it will not interfere with the bot
-        if os.path.exists("song.mp3"):
-            os.remove("song.mp3")
-
-    async def check_queues(self, id):
-        if self.queues[id] != []:
-            voice = discord.utils.get(self.bot.voice_clients, guild=id)
-            if self.loop:
-                voice.play(discord.FFmpegPCMAudio(self.current_song))
-            else:
-                source = self.queues[id].pop(0)
-                voice.play(source)
-                self.current_song = source
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('music is online')
 
     @commands.command()
-    async def play(self, ctx, *, url=None):
-        if url is None:
-            if self.loop:
-                url = self.current_song
-            else:
-                return
+    async def skip(self, ctx):
+        if queues[ctx.guild.id] != []:
+            # Fetch the first song in the queue
+            link = queues[ctx.guild.id].pop(0)
+            await self.play(ctx, link)
 
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice is None:
-            channel = ctx.author.voice.channel
-            voice = await channel.connect()
+    @commands.command()
+    async def play(self, ctx, link):
+        try:
+            if ctx.author.voice is None:
+                return await ctx.send("join a channel lol")
 
-        if voice.is_playing() or voice.is_paused():
-            if ctx.guild.id in self.queues:
-                self.queues[ctx.guild.id].append(url)
-            else:
-                self.queues[ctx.guild.id] = [url]
-            await ctx.send("Song added to queue.")
+            voice_client = await ctx.author.voice.channel.connect()
+            voice_clients[ctx.guild.id] = voice_client
+        except Exception as e:
+            print(e)
+        try:
+            loop = asyncio.get_event_loop()
+            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(link, download=False))
+
+            song = data['url']
+            player = discord.FFmpegOpusAudio(song, **ffmpeg_options)
+
+            voice_clients[ctx.guild.id].play(player,
+                                             after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx),
+                                                                                              self.bot.loop))
+        except Exception as e:
+            print(e)
+
+    @commands.command()
+    async def clear_queue(self, ctx):
+        if ctx.guild.id in queues:
+            queues[ctx.guild.id].clear()
+            await ctx.send("Queue cleared!")
         else:
-            if not ctx.author.voice:
-                await ctx.send("You must be in a voice channel to run this command")
-                return
-
-            voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-            if voice is None:
-                channel = ctx.author.voice.channel
-                voice = await channel.connect()
-
-            ydl_opts = {
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                }],
-            }
-
-            if "http" not in url:
-                yt = YoutubeSearch(url, max_results=1).to_json()
-                print(yt)
-                yt_id = str(json.loads(yt)['videos'][0]['id'])
-                yt_channel = str(json.loads(yt)['videos'][0]['channel']).strip().replace(" ", "")
-                url = 'https://www.youtube.com/watch?v=' + yt_id + "&ab_channel=" + yt_channel
-
-            self.current_song = url
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
-                info = ydl.extract_info(url, download=False)
-                title = info.get('title', None)
-
-            for file in os.listdir("./"):
-                if file.endswith(".mp3"):
-                    os.rename(file, "song.mp3")
-                    break
-
-            voice.play(discord.FFmpegPCMAudio("song.mp3"),
-                       after=lambda e: self.bot.loop.create_task(self.play(ctx, url=self.current_song)))
-
-            embed = discord.Embed(
-                title="Hiện đang chơi ",
-                description=f"[{title}]({url})",
-                color=discord.Color.yellow()
-            )
-            await ctx.send(embed=embed)
-            await asyncio.sleep(1)  # Wait for the song to start playing
+            await ctx.send("There is no queue to clear!")
 
     @commands.command()
     async def stop(self, ctx):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice is not None:
-            voice.stop()
-        if os.path.exists("song.mp3"):
-            os.remove("song.mp3")
+        try:
+            voice_clients[ctx.guild.id].pause()
+        except Exception as e:
+            print(e)
 
     @commands.command()
-    async def loop(self, ctx):
-        self.loop = not self.loop
-        await ctx.send(f"Vòng lặp đang được {'Bật' if self.loop else 'Tắt'}.")
+    async def start(self, ctx):
+        try:
+            voice_clients[ctx.guild.id].resume()
+        except Exception as e:
+            print(e)
 
-async def setup(client):
-    await client.add_cog(Music(client))
+    @commands.command()
+    async def leave(self, ctx):
+        try:
+            voice_clients[ctx.guild.id].stop()
+            await voice_clients[ctx.guild.id].disconnect()
+            del voice_clients[ctx.guild.id]
+        except Exception as e:
+            print(e)
+
+    @commands.command()
+    async def queue(self, ctx, url):
+        if ctx.guild.id not in queues:
+            queues[ctx.guild.id] = []
+        queues[ctx.guild.id].append(url)
+        await ctx.send("Added to queue!")
+
+
+async def setup(bot):
+    await bot.add_cog(Music(bot))

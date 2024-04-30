@@ -124,3 +124,7 @@ apikey.py
 
 #idea
 .idea
+checklist.md
+requirement.txt
+runtime.txt
+Procfile
