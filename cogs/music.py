@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 import yt_dlp
-import os
-from youtube_search import YoutubeSearch
 import asyncio
 
 voice_clients = {}
