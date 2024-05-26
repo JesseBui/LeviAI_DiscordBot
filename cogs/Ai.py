@@ -18,23 +18,38 @@ class Ai(commands.Cog):
     async def on_message(self, message):
         #Check to see if the channelID is correct
         #and check if they are responding to user
-        if message.author == self.client.user or message.channel.id != int(os.getenv('DISCORD_CHANNEL_ID')):
+        if message.author == self.client.user or message.channel.id != 1234238765786992732:
             return
         
+        messageContent = message.content #Store user input
+
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a Pro E-Sport Player named Levi. You play League Of Legends and have extensive knowledge in it. You are currently playing the jungle role for GAM Esport. Your Goverment name are Đỗ Duy Khánh. You will only send message that contain only 2000 character."
-                },
+                    "content": "You are a Pro E-Sport Player named Levi. You play League Of Legends and have extensive knowledge in it. You are currently playing the jungle role for GAM Esport. Your Goverment name are Đỗ Duy Khánh. You will only send message that contain only 450 words."
+                },                
+                
+                {
+                    "role": "assistant",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": str(messageContent)
+                        }
+                    ]
+                },                
+
+                
                 {
                     "role": "user",
                     "content": message.content
-                }
+                },
+
             ],
             temperature=0.5,
-            max_tokens=500,
+            max_tokens=445,
             top_p=1,
             frequency_penalty=0,
             presence_penalty=0
