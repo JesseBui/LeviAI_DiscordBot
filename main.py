@@ -3,8 +3,7 @@ from discord.ext import commands
 import os
 import asyncio
 from dotenv import load_dotenv
-
-load_dotenv()
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,7 +19,7 @@ async def load():
 async def main():
     async with client:
         await load()
-        await client.start(os.getenv("tokenbot"))
+        await client.start(os.getenv("bot_token"))
 
 @client.event
 async def on_ready():
