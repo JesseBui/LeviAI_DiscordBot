@@ -3,7 +3,7 @@ from openai import OpenAI
 import os
 
 client = OpenAI(
-    api_key= os.getenv("chatgptkey")
+    api_key= os.getenv("gpt_key")
 )
 
 class Ai(commands.Cog):

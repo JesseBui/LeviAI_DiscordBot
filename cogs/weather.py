@@ -20,7 +20,7 @@ class Weather(commands.Cog):
     async def weather(self,ctx ,*, city):
         url = "https://api.weatherapi.com/v1/current.json"
         params = {
-        "key": os.getenv("weatherkey"),
+        "key": os.getenv("weather_key"),
         "q": city
     }
         async with aiohttp.ClientSession() as session:

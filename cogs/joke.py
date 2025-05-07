@@ -19,7 +19,7 @@ class Joke(commands.Cog):
     async def joke(self,ctx):
         url = "https://daddyjokes.p.rapidapi.com/random"
         headers = {
-	    "X-RapidAPI-Key": os.getenv("jokekey"),
+	    "X-RapidAPI-Key": os.getenv("joke_key"),
 	    "X-RapidAPI-Host": "daddyjokes.p.rapidapi.com"
         }
         response = requests.get(url, headers=headers)
