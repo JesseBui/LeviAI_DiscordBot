@@ -63,7 +63,7 @@ class Ai(commands.Cog):
     @commands.command()
     async def clear(self,ctx):
         self.memory = [self.memory[0]]
-        await ctx.send("Message have been clear")
+        await ctx.send("memory reset beep boop")
         print(self.memory)
             
 async def setup(client):
