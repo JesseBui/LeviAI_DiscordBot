@@ -28,6 +28,13 @@ class Ai(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print("chatgpt is ready")
+
+    """
+    split content to comply with 2000 word limit by discord
+    i = start : i+limit = end 
+    """
+    def split_text(text,limit = 2000):
+        return [text[i: i+limit] for i in range(0, len(text), limit)]
     
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -56,10 +63,16 @@ class Ai(commands.Cog):
 
             assisstant_reply = response.choices[0].message.content
 
+
+
             self.memory.append({"role": "assistant", "content": assisstant_reply})
             print(f"assisstant reply {assisstant_reply}")
-            print(self.memory)
             print(message.content+ " was send to Levi"+ " and his response was "+assisstant_reply)
+
+            if len(assisstant_reply) > 1900: 
+                words = self.split_text(assisstant_reply)
+                for word in words:
+                    await message.channel.send(word)
             await message.channel.send(assisstant_reply)
         
         except Exception as e:
