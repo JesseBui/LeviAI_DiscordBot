@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 load_dotenv() 
 
 client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
   api_key= os.getenv("OPENAI_API_KEY"),
 )
 
@@ -43,23 +42,31 @@ class Ai(commands.Cog):
             self.memory = [self.memory[0]]
             await message.channel.send("memory reset beep boop")
             print(self.memory)
+            return
+        
+        try:
+            print("testing sending request to openai")
+            response = client.chat.completions.create(
+                model="gpt-5.1",
+                messages= self.memory,
+                temperature=0.5,
+                top_p=1, #max unpredictable
+                frequency_penalty=0,
+            )
 
-        response = client.chat.completions.create(
-            model="deepseek/deepseek-chat-v3-0324:free",
-            messages= self.memory,
-            temperature=0.5,
-            max_tokens=256,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-        )
+            assisstant_reply = response.choices[0].message.content
 
-        assisstant_reply = response.choices[0].message.content
+            self.memory.append({"role": "assistant", "content": assisstant_reply})
+            print(f"assisstant reply {assisstant_reply}")
+            print(self.memory)
+            print(message.content+ " was send to Levi"+ " and his response was "+assisstant_reply)
+            await message.channel.send(assisstant_reply)
+        
+        except Exception as e:
+            # This will tell you exactly why it's failing in your console
+            print(f"ERROR: {e}") 
+            await message.channel.send(f"Levi crashed: {e}")
 
-        self.memory.append({"role": "assistant", "content": assisstant_reply})
-        print(message.content+ " was send to Levi"+ " and his response was "+response.choices[0].message.content)
-        await message.channel.send(response.choices[0].message.content)
-    
     @commands.command()
     async def clear(self,ctx):
         self.memory = [self.memory[0]]
