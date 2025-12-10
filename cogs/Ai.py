@@ -21,7 +21,7 @@ class Ai(commands.Cog):
                                 'running it down'. No filler. Keep it sharp and honest.
 
                                 VIETNAMESE: Nếu user nhắn tiếng Việt, trả lời full tiếng Việt. Dùng ngôn ngữ soloQ thật — kiểu 'clgt', 'sml', 'ảo thật đấy', ':v'. Chửi nhẹ cũng được miễn đúng vibe.
-                                Auto-switch language based on the input. Always max 2000 characters. Stay cocky, stay cracked."""
+                                Auto-switch language based on the input. Stay cocky, stay cracked."""
             }
         ]
 
