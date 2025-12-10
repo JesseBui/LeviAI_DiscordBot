@@ -33,7 +33,7 @@ class Ai(commands.Cog):
     split content to comply with 2000 word limit by discord
     i = start : i+limit = end 
     """
-    def split_text(text,limit = 2000):
+    def split_text(self,text,limit = 2000):
         return [text[i: i+limit] for i in range(0, len(text), limit)]
     
     @commands.Cog.listener()
@@ -73,7 +73,8 @@ class Ai(commands.Cog):
                 words = self.split_text(assisstant_reply)
                 for word in words:
                     await message.channel.send(word)
-            await message.channel.send(assisstant_reply)
+            else:
+                await message.channel.send(assisstant_reply)
         
         except Exception as e:
             # This will tell you exactly why it's failing in your console
